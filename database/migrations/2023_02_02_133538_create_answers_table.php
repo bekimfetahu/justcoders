@@ -16,7 +16,7 @@ class CreateAnswersTable extends Migration
         Schema::create('answers', function (Blueprint $table) {
             $table->id();
             $table->text('content');
-            $table->foreignId('answer_id')->constrained('answers');
+            $table->foreignId('answer_id')->nullable()->constrained('answers');
             $table->foreignId('question_id')->constrained('questions');
             $table->foreignId('edited_by')->nullable()->constrained('users');
             $table->foreignId('created_by')->nullable()->constrained('users');
