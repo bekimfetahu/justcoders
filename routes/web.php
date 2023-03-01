@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,23 +18,6 @@ use Inertia\Inertia;
 |
 */
 
-
-Route::get('/questions/ask', [QuestionController::class,'showAsk']);
-
-
-Route::post('/questions/ask', [QuestionController::class,'ask'])->name('questions.ask');
-Route::post('/questions/answer', [QuestionController::class,'answer'])->name('questions.answer');
-Route::post('/questions/comment', [QuestionController::class,'comment'])->name('questions.comment');
-Route::get('/questions/{id}/{slug}',[QuestionController::class,'showQuestionDetail']);
-Route::get('/questions/list', [QuestionController::class,'showQuestionList']);
-
-Route::get('/answer/{id}/edit',[QuestionController::class,'showEditAnswer']);
-Route::post('/answer/edit', [QuestionController::class,'editAnswer'])->name('answer.edit');
-
-
-Route::get('/question/{id}/edit',[QuestionController::class,'showEditQuestion']);
-Route::post('/question/edit', [QuestionController::class,'editQuestion'])->name('questions.edit');
-
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -43,16 +27,40 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/questions/list', [QuestionController::class,'showQuestionList']);
+Route::get('/question/list', [QuestionController::class, 'showQuestionList'])->name('question.lists');
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/question/{id}/edit',[QuestionController::class, 'showEditQuestion'])->name('question.show_edit');
+Route::get('/tag/{tag}',[QuestionController::class, 'showQuestionByTag'])->name('questions.filer_tag');
+
 Route::middleware('auth')->group(function () {
+    Route::get('/user/{id}/view', [UserController::class, 'viewOtherProfile'])->name('user.profile.view');
+    Route::post('/vote_action', [QuestionController::class, 'voteAction']);
+    
+    Route::post('/questions/{question}/answer/{answer}/comment', [QuestionController::class, 'addNewAnswerComment'])->name('question.answer.comment');
+    
+    Route::post('/questions/{question}/comment', [QuestionController::class, 'addNewComment'])->name('question.comment.store');
+
+    Route::get('/questions/show-ask', [QuestionController::class, 'showAsk'])->name('question.show_ask');
+    Route::post('/questions/ask-question', [QuestionController::class, 'ask'])->name('question.ask');
+    Route::get('/questions/{id}/{slug}', [QuestionController::class, 'showQuestionDetail'])->name('question.detail');
+    
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/question/{id}', [QuestionController::class,'getQuestionById']);
+Route::get('/answers/{id}', [QuestionController::class,'getAnswersById']);
+Route::post('/vote_action', [QuestionController::class,'voteAction'])->middleware('auth');
+Route::post('/accept_answer', [QuestionController::class,'acceptAnswer'])->middleware('auth');
+
+Route::get('/user/isAuthenticated', [UserController::class, 'isAuthenticated']);
+Route::get('/user/getCurrentUserId',[UserController::class, 'getCurrentUserId']);
 
 require __DIR__.'/auth.php';

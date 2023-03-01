@@ -8,6 +8,10 @@ class Question extends Model
 {
     
     public $timestamps = true;
+    
+    protected $appends = [
+        'created_at_for_humans'
+    ];
 
     public function user()
     {
@@ -17,5 +21,9 @@ class Question extends Model
      public function tag()
     {
         return $this->hasMany(Tag::class);
+    }
+    public function getCreatedAtForHumansAttribute(){
+        
+        return $this->created_at->diffForHumans();
     }
 }

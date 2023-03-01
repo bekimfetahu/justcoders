@@ -18,7 +18,12 @@ export default defineConfig({
             },
         }),
     ],
-    ssr: {
-        noExternal: ['@inertiajs/server'],
-    },
+    server:{
+        host:"0.0.0.0",
+        port:5173,
+        open:false,
+        hmr:{
+            host:"localhost"
+        }
+    }
 });
